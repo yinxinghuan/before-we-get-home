@@ -9,10 +9,10 @@
   "endingAnchors": 8,
   "languages": ["zh", "en"],
   "poster": "public/poster.png",
-  "status": "release-ready",
+  "status": "published",
   "deployment": {
     "selfHosted": "https://game.aiwaves.tech/ce2b7231-7996-430d-85f6-8fdf184acf3d/",
     "githubPagesMirror": "https://yinxinghuan.github.io/before-we-get-home/",
-    "gamesJson": "pending-registration"
+    "gamesJson": "registered"
   }
 }
