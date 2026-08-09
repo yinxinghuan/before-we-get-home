@@ -1,0 +1,18 @@
+{
+  "id": "before-we-get-home",
+  "title": "Before We Get Home",
+  "uuid": "ce2b7231-7996-430d-85f6-8fdf184acf3d",
+  "saveNamespace": "before-we-get-home",
+  "mode": "guided-single-player",
+  "chapters": 8,
+  "deterministicDemoTurns": 28,
+  "endingAnchors": 8,
+  "languages": ["zh", "en"],
+  "poster": "public/poster.png",
+  "status": "local-qa-passed",
+  "deployment": {
+    "selfHosted": null,
+    "githubPagesMirror": null,
+    "gamesJson": "not-modified"
+  }
+}

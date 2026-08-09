@@ -1,0 +1,76 @@
+{
+  "$schema": "./world-brief.schema.json",
+  "game": {
+    "id": "before-we-get-home",
+    "titleZh": "回家之前",
+    "titleEn": "Before We Get Home",
+    "mode": "guided",
+    "languages": ["zh", "en"]
+  },
+  "experience": {
+    "playerFantasy": "You are an ordinary person crossing a damaged modern city before dawn to find your mother and younger brother after an earthquake and flash flood.",
+    "emotionalPromise": "An immediately understandable journey home where practical survival choices become humane promises with visible consequences.",
+    "commonKnowledgeBoundary": "A familiar contemporary city, common emergency supplies, and real-world disaster logic; no specialist rescue knowledge or supernatural glossary is required.",
+    "openingObjective": "Leave the disabled central station, follow the family's final voice message, and reach Riverside Stadium before the flood crest arrives at dawn."
+  },
+  "world": {
+    "fixedRules": [
+      "The earthquake, storm, flooding, road closures, injuries, ownership, promises, and confirmed locations cannot be silently rewritten.",
+      "Phone service is intermittent, battery is finite, and every call, map search, flashlight use, or public alert has a visible cost.",
+      "Characters know only what they witnessed, were told, or can verify from physical evidence.",
+      "A companion remains present until an explicit separation, injury, rescue assignment, or farewell is shown and persisted.",
+      "Failure changes time, injuries, supplies, routes, relationships, or who can still be reached; it never deletes the save."
+    ],
+    "generationRules": [
+      "AI may create residents, small rescue problems, weather complications, building interiors, rumors, and ordinary supplies within the established city.",
+      "Every turn changes location, time, battery, condition, inventory, relationship, route, clue, or confirmed family status.",
+      "The visible prose and three choices must address the same immediate situation.",
+      "The main objective remains finding the family before dawn; side rescues may alter routes and endings but cannot replace that objective."
+    ],
+    "maxActiveThreads": 3
+  },
+  "stats": [
+    { "id": "stamina", "labelZh": "体力", "labelEn": "Stamina", "min": 0, "max": 100, "initial": 82, "display": "bar", "dangerDirection": "low", "warningAt": 30, "dangerAt": 0, "maxDelta": 22 },
+    { "id": "time", "labelZh": "天亮前", "labelEn": "Before Dawn", "min": 0, "max": 100, "initial": 84, "display": "bar", "dangerDirection": "low", "warningAt": 28, "dangerAt": 0, "maxDelta": 18 },
+    { "id": "battery", "labelZh": "手机电量", "labelEn": "Phone Battery", "min": 0, "max": 100, "initial": 47, "display": "bar", "dangerDirection": "low", "warningAt": 20, "dangerAt": 0, "maxDelta": 20 }
+  ],
+  "choiceIntents": ["move quickly toward family", "help or coordinate with people nearby", "investigate a safer route or conserve a resource"],
+  "signatureItem": {
+    "nameZh": "最后一条语音",
+    "nameEn": "The Last Voice Message",
+    "ability": "Provides the family's last confirmed plan, background sounds, and a timestamp that can be re-examined for route clues.",
+    "limitOrCost": "Replaying, enhancing, sharing, calling, mapping, or using the flashlight consumes finite phone battery; the message cannot reveal events after it was recorded.",
+    "provenance": "Sent by the player's mother from a damaged bus stop immediately after the first earthquake."
+  },
+  "danger": {
+    "minSafeTurns": 2,
+    "maxSafeTurns": 4,
+    "cooldownTurns": 2,
+    "physicalCombat": "rare",
+    "methods": ["protect people and push through physically", "read the environment and find a safer route", "coordinate with a companion or spend a tool"],
+    "threatPalette": [
+      "an aftershock destabilizes the building or road currently being crossed",
+      "fast-rising floodwater traps people between two routes",
+      "an electrical fire blocks a shelter exit while smoke spreads",
+      "a panicked crowd or desperate thief contests a scarce vehicle or medical supply",
+      "a dark underpass hides broken glass, loose animals, and a sudden current"
+    ],
+    "fallbackStatId": "stamina",
+    "fallbackAmount": 14
+  },
+  "visuals": {
+    "material": "apartment",
+    "artDirection": "contemporary cinematic disaster drama, rain-dark asphalt, sodium-orange emergency light, wet concrete, practical clothing, restrained documentary realism",
+    "entryScene": "4:5 portrait view outside a disabled central station at night, ordinary traveler with phone and small bag, rain and emergency lights, damaged city road ahead, no readable text",
+    "sceneImageDirection": "cinematic contemporary disaster journey, grounded anatomy and practical actions, wet urban surfaces, one clear event, 4:5 portrait, no UI or readable text",
+    "itemImageDirection": "real emergency object study on dark wet cloth and neutral evidence surface, object only, no people, no readable text"
+  },
+  "audio": {
+    "mood": "distant rain, power hum, emergency radio fragments, sparse heartbeat-like low percussion, warmer acoustic tones near human shelter",
+    "bpm": 62
+  },
+  "ending": {
+    "type": "true-ending",
+    "failureConsequences": ["lost time", "injury", "dead phone", "closed route", "separation", "broken promise", "family moves before arrival"]
+  }
+}

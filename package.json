@@ -1,0 +1,31 @@
+{
+  "name": "before-we-get-home",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "test:protocol": "TMPDIR=/private/tmp tsx _qa/protocol.ts",
+    "test:danger": "TMPDIR=/private/tmp tsx _qa/danger-director.ts",
+    "test:ending": "TMPDIR=/private/tmp tsx _qa/ending-director.ts",
+    "test:campaign": "TMPDIR=/private/tmp tsx _qa/full-campaign.ts"
+  },
+  "dependencies": {
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@types/react": "^18.3.12",
+    "@types/react-dom": "^18.3.1",
+    "@vitejs/plugin-react": "^4.3.4",
+    "less": "^4.2.0",
+    "tsx": "^4.23.5",
+    "typescript": "^5.6.3",
+    "vite": "^5.4.21"
+  }
+}
