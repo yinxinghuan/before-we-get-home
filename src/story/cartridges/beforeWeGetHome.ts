@@ -168,13 +168,13 @@ function build(locale: Locale): StoryCartridge {
     sceneImageDirection: 'cinematic contemporary disaster journey at night, rain-dark asphalt, wet concrete, sodium-orange emergency light, practical modern clothing, grounded natural anatomy, humane documentary realism, one decisive current event, 4:5 portrait master',
     sceneImageAvoid: 'the central station opening composition, generic lone traveler looking at a phone, movie poster staging, military apocalypse, ruined skyline spectacle, readable signs, text, logo, border or UI',
     playerImageAliases: ['ordinary traveler', 'the traveler', 'returning traveler', 'player protagonist', '旅人', '赶路人', '玩家'],
-    playerImageRole: 'the unnamed player-controlled ordinary traveler in a dark rain shell with a small emergency backpack and phone; this person is never Ahe, Lin Lan, Xiaoyu or a responder',
+    playerImageRole: 'the unnamed player-controlled returning traveler; the supplied reference is authoritative for the traveler’s entire visible form, covering, costume and face visibility, while a small emergency backpack and blank phone are optional story props; this subject is never Ahe, Lin Lan, Xiaoyu or a responder',
     playerImageExclusions: [
       'Ahe is a nineteen-year-old delivery rider in an orange waterproof jacket with her own different face',
       'Lin Lan is the player family mother in her fifties with her own different face',
       'Xiaoyu is the sixteen-year-old younger brother with his own different face',
       'Zhoulan is a tired hospital nurse with her own different face',
-      'rescue workers, evacuees, children and animals can never inherit the reference face',
+      'rescue workers, evacuees, children and animals can never inherit any reference-derived face, covering, costume, silhouette, colors or body traits',
     ],
     imageDirector: { maxQuietTurns: 1, softCooldownTurns: 0, guaranteedTriggers: ['new-location', 'rare-item', 'party-change', 'chapter-checkpoint', 'relationship-change', 'objective-change', 'skill-outcome'], softTriggers: [] } satisfies StoryImageDirector,
     mediaDirector: { imageProfile: 'fast-small', imageTarget: { width: 512, height: 640 }, videoEnabled: true, videoDuration: 5, minVideoGapTurns: 8 },
@@ -229,7 +229,7 @@ function build(locale: Locale): StoryCartridge {
     drawerLabels: { party: s('同行者', 'Companions'), map: s('城市路线', 'City route'), inventory: s('应急包', 'Emergency bag'), log: s('线索', 'Clues') },
     opening: {
       location: s('中央车站 · 南广场', 'Central Station · South Plaza'), time: s('凌晨 01:40', '01:40 AM'), objective: s('离开停电车站，去河滨体育馆寻找母亲和小宇', 'Leave the disabled station and reach Riverside Stadium to find your mother and Xiaoyu'),
-      imagePrompt: 'outside a disabled central railway station at night just after an earthquake, ordinary returning traveler in a dark rain jacket holding a dim blank phone and small practical backpack, rain, wet asphalt, residents helping each other, damaged road toward distant emergency glow, before the traveler chooses a route, grounded contemporary documentary realism, 4:5 portrait, all signs and screens blank, no writing, no text, no UI',
+      imagePrompt: 'outside a disabled central railway station at night just after an earthquake, SUBJECT A shown with the complete visual identity from the supplied player reference, with a dim blank phone and a small practical backpack resting beside SUBJECT A instead of being held, rain, wet asphalt, residents helping each other, damaged road toward distant emergency glow, before the player chooses a route, grounded contemporary documentary realism, 4:5 portrait, all signs and screens blank, no writing, no text, no UI',
       blocks: [
         { id: 'bh0', kind: 'narration', text: s('凌晨一点四十分，中央车站停电。余震刚停，雨水沿着裂开的站台边缘灌进南广场。', 'At 1:40 AM Central Station loses power. The aftershock has just stopped, and rain pours from the cracked platform edge into South Plaza.'), data: { stageOverlay: s('中央车站停电。母亲最后一条语音把你指向河滨体育馆。', 'Central Station is dark. Your mother’s last voice message points toward Riverside Stadium.') } },
         { id: 'bh1', kind: 'dialogue', speaker: s('母亲的语音', 'Mother’s message'), tone: s('压低声音', 'trying to stay calm'), text: s('我和小宇正去体育馆。你回来时别走河边，听见没有？手机快没电了。', 'Xiaoyu and I are heading to the stadium. Do not take the river road when you come back. Do you hear me? My phone is almost dead.') },
