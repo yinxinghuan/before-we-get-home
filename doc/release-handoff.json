@@ -8,6 +8,25 @@
   "deterministicDemoTurns": 28,
   "endingAnchors": 8,
   "languages": ["zh", "en"],
+  "sourceCommit": "5044df9",
+  "playerImageIdentity": {
+    "reference": "original-public-avatar-url",
+    "mode": "edit",
+    "profileStartupWindowMs": 10500,
+    "legacyOpeningRepairCount": 2,
+    "contractVersion": 1
+  },
+  "verified": [
+    "protocol",
+    "danger-director",
+    "ending-director",
+    "28-turn-campaign",
+    "image-director",
+    "avatar-direct",
+    "avatar-late",
+    "saved-opening-repair",
+    "production-build"
+  ],
   "poster": "public/poster.png",
   "status": "published",
   "deployment": {
