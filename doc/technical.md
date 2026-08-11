@@ -4,7 +4,7 @@
 
 - React 18 + TypeScript + Less + Vite 5，`base: './'`，可在任意部署子路径运行。
 - 叙事核心是结构化 `StoryCartridge`、本地 reducer、Aigram 长对话接口和可恢复的 `StorySave v7`。
-- 运行时场景图使用 `useGenImage()` 调用 Aigram transit 生图；目标尺寸 `512×640`，每次成功行动排队一张图。
+- 运行时场景图使用 `useGenImage()` 默认调用独立 AlterU Media Service；目标尺寸 `512×640`，每次成功行动排队一张图。紧急回滚可在游戏 URL 添加 `?media_backend=legacy`，改回 Aigram transit 生图。
 - 当前玩家资料通过 `/note/telegram/user/get/info/by/telegram_id` 读取。玩家主导镜头把头像一次裁成 `512×640` 技术参考图并缓存上传；NPC 主导、环境和物品镜头不传头像。
 - 声音由 Web Audio 合成器实时生成，无外部音频文件。雨夜环境、路线张力、危险提示、人物重逢和结局使用不同节奏与音色层。
 
@@ -19,6 +19,8 @@ src/story/
   useStoryEngine.ts                       # 存档、生成队列、头像身份绑定和视频里程碑
   useAvatarImageReference.ts              # 头像 4:5 裁切、上传与缓存
   StoryShell.tsx / story.less             # Civic 竖版固定画面界面
+src/shared/runtime/media.ts               # 独立媒体服务客户端、尺寸适配与任务轮询
+src/shared/runtime/useGenImage.ts          # 新媒体服务默认路由与旧 transit 回滚开关
 public/poster.png                         # 1024×1024 正式英文海报
 _qa/full-campaign.ts                      # 中英文 28 回合完整路径回归
 ```
@@ -31,6 +33,7 @@ _qa/full-campaign.ts                      # 中英文 28 回合完整路径回�
 - `beforeWeGetHomeCampaign.ts` 把 28 次玩家决定实现为成对中英文分支；每个按钮命中独立结果，不复用与行动不符的通用段落。物品获得和消耗必须同时输出结构化 `inventory` 命令。
 - `reducer.ts` 是唯一确定性真源，负责数值、地图、同行者、事实、背包、危险和结局状态；模型不能直接覆盖已有事实或清空同伴。
 - `imageDirector.ts` 拒绝带 CJK 的 renderer prompt，并把 `image_subject` 解释为头像归属：只有玩家执行主要画面动作时为 `player`。`useStoryEngine.ts` 追加 PERSON A 演员表约束，明确阿禾、林岚、小宇、周岚、路人和动物均不能继承用户参考脸。
+- `src/shared/runtime/media.ts` 是独立媒体服务的框架无关客户端：统一请求 UUID、尺寸适配、任务轮询、超时和结构化错误。`useGenImage.ts` 以永久游戏 UUID 作为 `session_id`；网络结果不明确时复用同一 `request_id`，避免重复生成和重复计费。视频暂不迁移，因为当前故事画面是 `4:5`，实验视频端点只接受 `9:16`。
 - `endingDirector.ts` 在玩家抵达河湾学校、确认家人位置且至少推进 18 场后开放真结局。结局由可用能力、事实、数值、背包、人物关系和最终行动组合，不是固定三选一文案。
 - 存档同时覆盖 Aigram 正式存档与浏览器回退；二次进入显示“继续游戏 / 重新开始”，继续后跳到最后锚点。
 - 双语由 cartridge 成对导出；界面跟随系统语言或玩家回复语言，海报始终只使用英文。
@@ -41,5 +44,5 @@ _qa/full-campaign.ts                      # 中英文 28 回合完整路径回�
 - 改 demo 全流程分支和具体数值：编辑 `beforeWeGetHomeCampaign.ts` 并运行 `npm run test:campaign`。
 - 换世界或题材：复制 cartridge，保留 engine、adapters、Civic UI 和结构化协议；必须分配新 UUID 与新存档命名空间。
 - 改界面表现：主要修改 `StoryShell.tsx` 与 `story.less`；不得改变“结果阶段隐藏旧选项、下一步再显示新前提和新选项”的两拍节奏。
-- 改生图：修改 cartridge 的 `sceneImageDirection`、`sceneImageAvoid`、`playerImageRole` 与 `playerImageExclusions`；不可把中文可见故事正文拼入 renderer prompt。
+- 改生图内容：修改 cartridge 的 `sceneImageDirection`、`sceneImageAvoid`、`playerImageRole` 与 `playerImageExclusions`；不可把中文可见故事正文拼入 renderer prompt。改媒体服务合同：修改 `src/shared/runtime/media.ts`；临时回滚旧生图链路：在 URL 增加 `media_backend=legacy`。
 - 接后端或正式发布：通过 `@shared/runtime` 和独立 `game-publish` 流程处理；源码项目本身不编辑平台迁移工具生成的 `games.json`。

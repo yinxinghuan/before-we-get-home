@@ -24,3 +24,4 @@
 
 - 玩家头像不是静态素材。游戏启动后读取当前用户 `head_url`，裁成 512×640 技术参考图，只在玩家执行镜头主要动作时传给 image-to-image。
 - 参考脸唯一绑定到 PERSON A。阿禾、林岚、小宇、周岚、救援人员、孩子和动物显式列入排除身份，禁止脸部复制、交换或人兽混合。
+- 2026-08-11 起，运行时图片默认通过 `https://game.aiwaves.tech/alteru-media/api/v1/images/generations` 生成；媒体服务再统一适配底层提供商。旧 Aigram transit 仅作为 `?media_backend=legacy` 的紧急回滚路径。
