@@ -127,11 +127,16 @@ function latestLocation(next: StorySave, parsed: ParsedScene): string {
   return update?.type === 'map_update' ? update.location : next.location
 }
 
-function playerIsVisible(cartridge: StoryCartridge, parsed: ParsedScene, proposal?: string, subject?: SceneImageSubject): boolean {
+function actionDelegatesVisualAgency(action: string): boolean {
+  return /^(?:先)?(?:请|让|叫|要求|命令|询问|问|听|观察|看着|查看|跟随|等待|交给|委托)|^(?:ask|tell|let|have|order|request|question|listen|watch|observe|follow|wait|leave\b.*\bto)\b/i.test(action.trim())
+}
+
+function playerIsVisible(cartridge: StoryCartridge, parsed: ParsedScene, proposal?: string, subject?: SceneImageSubject, action = ''): boolean {
   const shot = proposal?.trim() || visibleBeat(parsed)
   if (/\b(no people|nobody|unoccupied|environment-only|object-only)\b|无人|空镜|纯环境|物品特写/i.test(shot)) return false
   if (subject === 'player') return true
-  if (subject === 'environment' || subject === 'others') return false
+  if (subject === 'environment') return false
+  if (subject === 'others') return Boolean(action.trim() && !actionDelegatesVisualAgency(action) && mentionsPlayer(shot, cartridge))
   return mentionsPlayer(shot, cartridge)
 }
 
@@ -175,6 +180,10 @@ export function shouldUsePlayerImageReference(prompt: string, aliases: string[] 
   return playerVisible && !explicitlyEmpty
 }
 
+export function shouldRepairDirectPlayerAction(prompt: string, action: string, aliases: string[] = []): boolean {
+  return Boolean(action.trim() && !actionDelegatesVisualAgency(action) && shouldUsePlayerImageReference(prompt, aliases))
+}
+
 export function upgradePendingSceneImagePrompts(save: StorySave, cartridge: StoryCartridge): StorySave {
   let changed = false
   const blocks = save.blocks.map((block, index) => {
@@ -213,10 +222,11 @@ export function chooseSceneImage(
   cartridge: StoryCartridge,
   aiPrompt?: string,
   imageSubject?: SceneImageSubject,
+  action = '',
 ): SceneImageDecision {
   const proposal = aiPrompt?.trim()
   if (proposal) {
-    const visible = playerIsVisible(cartridge, parsed, proposal, imageSubject)
+    const visible = playerIsVisible(cartridge, parsed, proposal, imageSubject, action)
     return {
       prompt: buildScenePrompt(cartridge, next, parsed, 'cadence', proposal, visible),
       source: 'ai',
@@ -226,7 +236,7 @@ export function chooseSceneImage(
   }
 
   const director = cartridge.imageDirector
-  const visible = playerIsVisible(cartridge, parsed, undefined, imageSubject)
+  const visible = playerIsVisible(cartridge, parsed, undefined, imageSubject, action)
   const triggers = detectTriggers(previous, parsed)
   const guaranteed = director ? firstTrigger(triggers, director.guaranteedTriggers) : undefined
   if (guaranteed) return { prompt: buildScenePrompt(cartridge, next, parsed, guaranteed, undefined, visible), source: 'director', reason: guaranteed, playerVisible: visible }

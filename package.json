@@ -13,7 +13,9 @@
     "test:protocol": "TMPDIR=/private/tmp tsx _qa/protocol.ts",
     "test:danger": "TMPDIR=/private/tmp tsx _qa/danger-director.ts",
     "test:ending": "TMPDIR=/private/tmp tsx _qa/ending-director.ts",
-    "test:campaign": "TMPDIR=/private/tmp tsx _qa/full-campaign.ts"
+    "test:campaign": "TMPDIR=/private/tmp tsx _qa/full-campaign.ts",
+    "test:image-director": "TMPDIR=/private/tmp tsx _qa/image-director.ts",
+    "test:avatar-reference": "TMPDIR=/private/tmp tsx _qa/image-identity.ts && /Users/yin/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node _qa/avatar-reference.mjs direct && /Users/yin/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node _qa/avatar-reference.mjs late && /Users/yin/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node _qa/avatar-reference.mjs saved-repair"
   },
   "dependencies": {
     "react": "^18.3.1",

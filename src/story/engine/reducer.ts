@@ -14,7 +14,9 @@ export function createInitialSave(cartridge: StoryCartridge, remoteChatId?: stri
     version: 7, cartridgeId: cartridge.id, locale: cartridge.locale, remoteChatId, entered: false, scene: 0,
     location: cartridge.opening.location, time: cartridge.opening.time, objective: cartridge.opening.objective,
     stats: Object.fromEntries(cartridge.statDefinitions.map((stat) => [stat.id, stat.initial])),
-    blocks: [...cartridge.opening.blocks, createImageBlock('image-0', cartridge.opening.location, cartridge.opening.imagePrompt, 'idle')],
+    blocks: [...cartridge.opening.blocks, createImageBlock('image-0', cartridge.opening.location, cartridge.opening.imagePrompt, 'idle', '', {
+      source: 'opening', reason: 'opening-crisis', promptVersion: String(SCENE_IMAGE_PROMPT_VERSION), playerVisible: 'true',
+    })],
     choices: cartridge.opening.choices, map: cartridge.initialMap.map((node) => ({ ...node, visited: node.visited ?? Boolean(node.current), facts: node.facts ? [...node.facts] : undefined })),
     inventory: cartridge.initialInventory.map((item) => ({ ...item, metrics: item.metrics?.map((metric) => ({ ...metric })), imageStatus: item.imageUrl ? 'ready' : 'idle' })),
     characters: cartridge.characters.map((character) => {
@@ -165,7 +167,7 @@ export function createImageBlock(id: string, location: string, prompt: string, s
   return { id, kind: 'image', text: location, data: { prompt, status, url, ...metadata } }
 }
 
-export function updateImageBlock(save: StorySave, blockId: string, patch: { status?: ImageBlockStatus; url?: string; videoStatus?: VideoBlockStatus; videoUrl?: string; videoTaskId?: string }): StorySave {
+export function updateImageBlock(save: StorySave, blockId: string, patch: { status?: ImageBlockStatus; url?: string; videoStatus?: VideoBlockStatus; videoUrl?: string; videoTaskId?: string; playerVisible?: string; identityRefVersion?: number }): StorySave {
   return {
     ...save,
     blocks: save.blocks.map((block) => block.id === blockId && block.kind === 'image'
@@ -480,7 +482,7 @@ export function applyParsedScene(
   // the dedicated resume action supplied by the Composer.
   if (!next.sessionEnded && next.choices.length < 2) next.choices = createRecoveryChoices(next, cartridge)
 
-  const image = chooseSceneImage(save, next, parsed, cartridge, imagePrompt, imageSubject)
+  const image = chooseSceneImage(save, next, parsed, cartridge, imagePrompt, imageSubject, actionId)
   const milestone = milestoneReason(parsed, dangerDirective)
   next.blocks = [
     ...next.blocks,

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { callAigramAPI, isInAigramNow, getTelegramId, type AigramResponse } from '../shared/runtime/bridge'
 
 interface ProfileData { name?: string; user_name?: string; head_url?: string }
@@ -24,36 +24,71 @@ export function usePlayerProfile(): PlayerProfile {
     name: debugName || 'AlterU',
     avatarUrl: debugAvatar || fallbackAvatar,
     imageRefUrl: publicHttpsUrl(debugAvatar),
-    loaded: !isInAigramNow(),
+    loaded: Boolean(debugAvatar),
     source: debugAvatar || debugName ? 'debug' : 'default',
   }))
 
-  useEffect(() => {
-    if (!isInAigramNow() || !getTelegramId()!) return
-    let cancelled = false
-    ;(async () => {
-      try {
-        const response = await callAigramAPI<AigramResponse<ProfileData>>(
-          `/note/telegram/user/get/info/by/telegram_id?telegram_id=${encodeURIComponent(getTelegramId()!)}`,
-          'GET',
-        )
-        if (cancelled) return
-        const data = response?.data
-        const platformAvatar = data?.head_url?.trim() || ''
-        const chosenAvatar = debugAvatar || platformAvatar
-        setProfile({
-          name: debugName || data?.name?.trim() || data?.user_name?.trim() || 'AlterU',
-          avatarUrl: chosenAvatar || fallbackAvatar,
-          imageRefUrl: publicHttpsUrl(chosenAvatar),
-          loaded: true,
-          source: debugAvatar || debugName ? 'debug' : platformAvatar ? 'aigram' : 'default',
-        })
-      } catch {
-        if (!cancelled) setProfile((current) => ({ ...current, loaded: true }))
-      }
-    })()
-    return () => { cancelled = true }
+  const resolvedPlayerId = useRef<string | null>(null)
+  const loadingPlayerId = useRef<string | null>(null)
+
+  const refreshProfile = useCallback(async () => {
+    if (!isInAigramNow()) return false
+    const playerId = getTelegramId()
+    if (!playerId || loadingPlayerId.current === playerId) return false
+    if (resolvedPlayerId.current === playerId) return true
+    loadingPlayerId.current = playerId
+    setProfile((current) => ({ ...current, loaded: false }))
+    try {
+      const response = await callAigramAPI<AigramResponse<ProfileData>>(
+        `/note/telegram/user/get/info/by/telegram_id?telegram_id=${encodeURIComponent(playerId)}`,
+        'GET',
+      )
+      const data = response?.data
+      const platformAvatar = data?.head_url?.trim() || ''
+      const chosenAvatar = debugAvatar || platformAvatar
+      resolvedPlayerId.current = playerId
+      setProfile({
+        name: debugName || data?.name?.trim() || data?.user_name?.trim() || 'AlterU',
+        avatarUrl: chosenAvatar || fallbackAvatar,
+        imageRefUrl: publicHttpsUrl(chosenAvatar),
+        loaded: true,
+        source: debugAvatar || debugName ? 'debug' : platformAvatar ? 'aigram' : 'default',
+      })
+      return true
+    } catch {
+      setProfile((current) => ({ ...current, loaded: true }))
+      return false
+    } finally {
+      if (loadingPlayerId.current === playerId) loadingPlayerId.current = null
+    }
   }, [debugAvatar, debugName, fallbackAvatar])
+
+  useEffect(() => {
+    let cancelled = false
+    let attempts = 0
+    const check = () => { if (!cancelled) void refreshProfile() }
+    check()
+    const bootstrap = window.setInterval(() => {
+      attempts += 1
+      check()
+      if (attempts >= 20 || resolvedPlayerId.current) window.clearInterval(bootstrap)
+    }, 500)
+    const fallbackReady = window.setTimeout(() => {
+      if (!cancelled && !isInAigramNow()) setProfile((current) => ({ ...current, loaded: true }))
+    }, 10_500)
+    const onVisibility = () => { if (!document.hidden) check() }
+    window.addEventListener('message', check)
+    window.addEventListener('focus', check)
+    document.addEventListener('visibilitychange', onVisibility)
+    return () => {
+      cancelled = true
+      window.clearInterval(bootstrap)
+      window.clearTimeout(fallbackReady)
+      window.removeEventListener('message', check)
+      window.removeEventListener('focus', check)
+      document.removeEventListener('visibilitychange', onVisibility)
+    }
+  }, [refreshProfile])
 
   return profile
 }
