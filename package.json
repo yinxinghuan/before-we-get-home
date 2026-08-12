@@ -18,6 +18,7 @@
     "test:avatar-reference": "TMPDIR=/private/tmp tsx _qa/image-identity.ts && /Users/yin/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node _qa/avatar-reference.mjs direct && /Users/yin/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node _qa/avatar-reference.mjs platform-query && /Users/yin/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node _qa/avatar-reference.mjs slow && /Users/yin/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node _qa/avatar-reference.mjs late && /Users/yin/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node _qa/avatar-reference.mjs saved-repair",
     "test:character-debut": "TMPDIR=/private/tmp tsx _qa/character-debut.ts",
     "test:domain": "TMPDIR=/private/tmp tsx _qa/domain-rules.ts",
+    "test:opening": "TMPDIR=/private/tmp tsx _qa/opening-contract.ts",
     "test:stage-narrative": "TMPDIR=/private/tmp tsx _qa/stage-narrative.ts"
   },
   "dependencies": {

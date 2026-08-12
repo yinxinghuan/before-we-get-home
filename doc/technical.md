@@ -28,6 +28,7 @@ public/poster.png                         # 1024×1024 正式英文海报
 _qa/full-campaign.ts                      # 中英文 28 回合完整路径回归
 _qa/domain-rules.ts                       # 越权模型、重复收益与精确数值回归
 _qa/character-debut.ts                    # 隐藏未来角色与稳定 ID 登场回归
+_qa/opening-contract.ts / opening-sequence.mjs # 六拍开场内容合同与双尺寸浏览器回归
 ```
 
 永久游戏 UUID 为 `ce2b7231-7996-430d-85f6-8fdf184acf3d`；存档命名空间为 `before-we-get-home`。
@@ -35,6 +36,7 @@ _qa/character-debut.ts                    # 隐藏未来角色与稳定 ID 登�
 ## 3. 核心模块
 
 - `beforeWeGetHome.ts` 定义体力、天亮前时间、手机电量，固定人物林岚、小宇、阿禾与周岚，八章导演、危险节奏以及八类结局锚点。
+- 第 0 场由 `stageNarrativeBlocks()` 取出六个作者节拍并单向分页；`openingReady` 在末拍前不渲染 `Composer`，数字键也受同一门禁。末拍出现时页控件退出，选择与自由输入同步进入；重开回第 0 场会重置门禁，已有后续场景的存档不受影响。
 - `beforeWeGetHomeCampaign.ts` 把 28 次玩家决定实现为成对中英文分支；每个按钮命中独立结果，不复用与行动不符的通用段落。物品获得和消耗必须同时输出结构化 `inventory` 命令。
 - `reducer.ts` 是唯一确定性真源，负责数值、地图、同行者、事实、背包、危险和结局状态；模型不能直接覆盖已有事实或清空同伴。
 - `domainRules.ts` 在模型生成前判定被治理行动，返回 accepted/rejected 及完整 effect 集；命中后 reducer 丢弃该回合所有模型协议命令，只应用本地事务和本地三选项。拒绝不改存档，也不推进危险 cadence。Cartridge 当前治理最后语音和阿禾离站两项开场事务。
@@ -52,6 +54,6 @@ _qa/character-debut.ts                    # 隐藏未来角色与稳定 ID 登�
 - 新增一次性奖励、消耗、路线或入队门槛：在同一 cartridge 的 `domainRules` 中声明 stable id、要求、完整 effects 和成功/拒绝选项，并同步 `npm run test:domain`；不要把数值裁定只写进 prompt。
 - 改 demo 全流程分支和具体数值：编辑 `beforeWeGetHomeCampaign.ts` 并运行 `npm run test:campaign`。
 - 换世界或题材：复制 cartridge，保留 engine、adapters、Civic UI 和结构化协议；必须分配新 UUID 与新存档命名空间。
-- 改界面表现：主要修改 `StoryShell.tsx` 与 `story.less`；改字幕价值判断编辑 `engine/stageNarrative.ts` 并运行 `npm run test:stage-narrative`；不得改变“结果阶段隐藏旧选项、下一步再显示新前提和新选项”的两拍节奏。
+- 改界面表现：主要修改 `StoryShell.tsx` 与 `story.less`；改字幕价值判断编辑 `engine/stageNarrative.ts` 并运行 `npm run test:stage-narrative`；改开场必须同步 `npm run test:opening` 与 `_qa/opening-sequence.mjs`。不得改变“末拍前无选择”或“结果阶段隐藏旧选项、下一步再显示新前提和新选项”的节奏。
 - 改生图内容：修改 cartridge 的 `sceneImageDirection`、`sceneImageAvoid`、`playerImageRole` 与 `playerImageExclusions`；不可把中文可见故事正文拼入 renderer prompt。改媒体服务合同：修改 `src/shared/runtime/media.ts`；临时回滚旧生图链路：在 URL 增加 `media_backend=legacy`。
 - 接后端或正式发布：通过 `@shared/runtime` 和独立 `game-publish` 流程处理；源码项目本身不编辑平台迁移工具生成的 `games.json`。
