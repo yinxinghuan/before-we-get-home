@@ -1,6 +1,6 @@
 import type {
   Locale, StoryCartridge, StoryDangerDirector, StoryEndingAnchor, StoryEndingCapability,
-  StoryEndingDirector, StoryImageDirector,
+  StoryDomainRules, StoryEndingDirector, StoryImageDirector,
 } from '../types'
 import { buildBeforeWeGetHomeCampaign } from './beforeWeGetHomeCampaign'
 
@@ -10,6 +10,29 @@ const entryImage = new URL('../img/worlds/before-we-get-home-entry.png', import.
 function build(locale: Locale): StoryCartridge {
   const zh = locale === 'zh'
   const s = (cn: string, en: string) => zh ? cn : en
+
+  const domainRules: StoryDomainRules = {
+    rules: [
+      {
+        id: 'replay-last-message', intent: 'replay-last-message',
+        match: zh ? ['重听语音', '分辨背景里的路线声音', '再听一次语音'] : ['replay the message', 'identify background route sounds', 'listen to the message again'],
+        requirements: [{ type: 'fact', id: 'voice-old-market-clue', notEquals: true, reason: s('你已经确认了旧市场线索，重复播放不会产生第二条线索。', 'You already confirmed the Old Market clue; replaying cannot create a second clue.') }],
+        effects: [{ type: 'stat', id: 'battery', delta: -4 }, { type: 'fact', id: 'voice-old-market-clue', value: true }],
+        successText: s('你从十八秒语音里分辨出高架伸缩缝与“旧市场”：家人没有走河边。手机电量减少 4。', 'You isolate elevated-road joints and “Old Market” in the message: the family avoided the river. Battery falls by 4.'),
+        successChoices: zh ? ['请橙色雨衣骑手带你走旧市场小路', '记住线索，独自沿高架离开', '把线索告诉车站救援人员核对'] : ['Ask the orange-jacket rider to guide you through Old Market', 'Keep the clue and leave alone by the elevated road', 'Share the clue with station rescuers for verification'],
+        rejectionChoices: zh ? ['请橙色雨衣骑手带路', '立即沿高架离开车站', '先帮助广场居民撤离'] : ['Ask the orange-jacket rider for directions', 'Leave immediately by the elevated road', 'Help residents evacuate the plaza'],
+      },
+      {
+        id: 'help-ahe-and-exit', intent: 'help-ahe-and-exit',
+        match: zh ? ['帮广场上的骑手抬开倒下的车', '请橙色雨衣骑手带你走旧市场小路', '请骑手带你走旧市场小路'] : ['help a rider move a fallen scooter', 'ask the orange-jacket rider to guide you through Old Market', 'ask the rider to guide you through the Old Market'],
+        requirements: [{ type: 'fact', id: 'station-exited', notEquals: true, reason: s('你们已经离开车站，不能再次结算同一次相遇。', 'You have already left the station; the same meeting cannot resolve twice.') }],
+        effects: [{ type: 'party', change: 'add', characterId: 'ahe-rider' }, { type: 'map', nodeId: 'old-market' }, { type: 'stat', id: 'time', delta: -7 }, { type: 'fact', id: 'station-exited', value: true }, { type: 'objective', value: s('穿过旧市场火点，继续追踪家人', 'Cross the Old Market fire and continue tracking the family') }, { type: 'clock', value: s('凌晨 02:05', '02:05 AM') }],
+        successText: s('橙色雨衣骑手先扶正电动车，才说自己叫阿禾；她也在找夜班姐姐，并与你同行到旧市场。天亮前减少 7。', 'The orange-jacket rider rights the scooter before naming herself Ahe. She is searching for her night-shift sister and joins you to Old Market. Before-dawn time falls by 7.'),
+        successChoices: zh ? ['和阿禾先拉下市场总电闸', '从屋顶雨棚绕过火点继续赶路', '呼喊店内的人并组织居民撤离'] : ['Pull the market main breaker with Ahe', 'Use the awning roofs to bypass the fire', 'Call to the trapped people and organize evacuation'],
+        rejectionChoices: zh ? ['查看旧市场当前火势', '沿已确认路线继续前进', '检查阿禾是否仍在同行'] : ['Check the current Old Market fire', 'Continue along the confirmed route', 'Check whether Ahe is still with you'],
+      },
+    ],
+  }
 
   const capabilities: StoryEndingCapability[] = [
     {
@@ -219,6 +242,7 @@ function build(locale: Locale): StoryCartridge {
       choiceIntents: zh ? ['更快向家人前进', '帮助或协调眼前的人', '调查安全路线或节省资源'] : ['move faster toward family', 'help or coordinate with people here', 'investigate a safer route or conserve resources'],
     },
     dangerDirector,
+    domainRules,
     endingDirector,
     initialFacts: { 'family-last-known-stadium': true, 'player-has-last-message': true, 'direct-route-kept': false },
     statDefinitions: [
@@ -244,8 +268,8 @@ function build(locale: Locale): StoryCartridge {
     characters: [
       { id: 'lin-lan-mother', name: s('林岚', 'Lin Lan'), role: s('玩家的母亲', 'Player’s mother'), vitality: 72, stress: 68, detail: s('努力保持冷静，带着小宇和一名行动不便的邻居转移。', 'Trying to stay calm while moving Xiaoyu and a mobility-impaired neighbor.'), lore: s('做过社区急救培训，遇到危险会先确认身边最需要帮助的人。', 'Completed community first-aid training and checks who nearby needs help most.'), skills: [{ id: 'first-aid', label: s('急救', 'First aid'), value: 3 }, { id: 'coordinate', label: s('协调', 'Coordinate'), value: 3 }] },
       { id: 'xiaoyu-brother', name: s('小宇', 'Xiaoyu'), role: s('十六岁的弟弟', 'Sixteen-year-old brother'), vitality: 78, stress: 62, detail: s('离开体育馆寻找走散同学，留下了能被核对的路线痕迹。', 'Left the stadium to find a separated classmate and left a verifiable trail.'), lore: s('熟悉河湾学校和体育馆之间的自行车小路，但不是专业救援者。', 'Knows bicycle lanes between Riverbend School and the stadium but is not a trained rescuer.'), skills: [{ id: 'routes', label: s('熟悉街区', 'Local routes'), value: 3 }, { id: 'courage', label: s('勇气', 'Courage'), value: 3 }] },
-      { id: 'ahe-rider', name: s('阿禾', 'Ahe'), role: s('外卖骑手', 'Delivery rider'), vitality: 84, stress: 55, detail: s('十九岁，穿旧橙色雨衣，熟悉小路，也在找夜班下班的姐姐。', 'Nineteen, in an old orange rain jacket, knows side roads and is searching for an older sister finishing a night shift.'), lore: s('手机已经进水，记路主要靠送餐时形成的身体记忆。', 'Her phone is water-damaged, so she navigates through delivery-route memory.'), skills: [{ id: 'routes', label: s('城市小路', 'Side streets'), value: 4 }, { id: 'balance', label: s('平衡', 'Balance'), value: 3 }] },
-      { id: 'zhoulan-nurse', name: s('周岚', 'Zhoulan'), role: s('仁和医院护士', 'Renhe Hospital nurse'), vitality: 65, stress: 78, detail: s('负责拥挤急诊的伤员流向和二次转移记录。', 'Tracks casualty flow and secondary transfers through an overcrowded emergency ward.'), lore: s('只掌握经过医院或正式转移点的信息，不会凭空知道家人后续位置。', 'Knows only hospital and formal transfer information, never the family’s later location without evidence.'), skills: [{ id: 'triage', label: s('分诊', 'Triage'), value: 4 }, { id: 'records', label: s('核对', 'Verification'), value: 4 }] },
+      { id: 'ahe-rider', name: s('阿禾', 'Ahe'), role: s('外卖骑手', 'Delivery rider'), vitality: 84, stress: 55, hiddenUntilIntroduced: true, detail: s('十九岁，穿旧橙色雨衣，熟悉小路，也在找夜班下班的姐姐。', 'Nineteen, in an old orange rain jacket, knows side roads and is searching for an older sister finishing a night shift.'), lore: s('手机已经进水，记路主要靠送餐时形成的身体记忆。', 'Her phone is water-damaged, so she navigates through delivery-route memory.'), skills: [{ id: 'routes', label: s('城市小路', 'Side streets'), value: 4 }, { id: 'balance', label: s('平衡', 'Balance'), value: 3 }] },
+      { id: 'zhoulan-nurse', name: s('周岚', 'Zhoulan'), role: s('仁和医院护士', 'Renhe Hospital nurse'), vitality: 65, stress: 78, hiddenUntilIntroduced: true, detail: s('负责拥挤急诊的伤员流向和二次转移记录。', 'Tracks casualty flow and secondary transfers through an overcrowded emergency ward.'), lore: s('只掌握经过医院或正式转移点的信息，不会凭空知道家人后续位置。', 'Knows only hospital and formal transfer information, never the family’s later location without evidence.'), skills: [{ id: 'triage', label: s('分诊', 'Triage'), value: 4 }, { id: 'records', label: s('核对', 'Verification'), value: 4 }] },
     ],
     initialMap: [
       { id: 'central-station', label: s('中央车站', 'Central Station'), current: true, detail: s('停电、积水、南广场道路开裂，仍有人互相帮助。', 'Dark, flooding and cracked at South Plaza, with residents still helping each other.'), lore: s('车站是城市交通中心，也是灾后最先拥堵的离开点。', 'The station is the city’s transit hub and the first evacuation bottleneck.'), facts: [s('余震刚停', 'The aftershock just stopped'), s('南广场有三条出口', 'South Plaza has three exits')] },
