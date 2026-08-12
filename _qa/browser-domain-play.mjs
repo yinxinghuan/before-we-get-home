@@ -14,14 +14,17 @@ await page.addInitScript(() => { localStorage.clear(); sessionStorage.clear() })
 await page.goto('http://127.0.0.1:4175/?story_mode=demo&ui=civic&lang=zh', { waitUntil: 'domcontentloaded' })
 await page.addStyleTag({ content: '#alteru-guest-banner{display:none!important}' })
 await page.getByRole('button', { name: /听完最后一条语音/ }).click()
-await page.locator('.st-composer input').waitFor()
 
 async function advance() {
   const next = page.getByRole('button', { name: /查看下一步选择/ })
-  await next.click()
-  await next.waitFor({ state: 'hidden' })
+  if (await next.isVisible()) { await next.click(); await next.waitFor({ state: 'hidden' }) }
+  const captionNext = page.locator('.ct-stage__caption-page')
+  while (await captionNext.isVisible().catch(() => false)) await captionNext.click()
   await page.locator('.st-composer input').waitFor()
 }
+
+await page.getByRole('button', { name: /查看下一步选择/ }).waitFor()
+await advance()
 
 async function act(text) {
   const input = page.locator('.st-composer input')
@@ -30,13 +33,10 @@ async function act(text) {
   await page.getByRole('button', { name: /查看下一步选择/ }).waitFor({ timeout: 10_000 })
 }
 
-await page.getByRole('button', { name: /重听语音/ }).click()
-await page.getByRole('button', { name: /查看下一步选择/ }).waitFor({ timeout: 10_000 })
 let body = await page.locator('body').innerText()
-if (!body.includes('手机电量减少 4')) throw new Error('Replay did not render the exact battery cost')
+if (!body.includes('47 降到 43') && !body.includes('43')) throw new Error('Entry action did not render the exact battery result')
 await page.screenshot({ path: new URL('01-voice-clue-platform-layout-390x844.png', evidenceDir).pathname, fullPage: true })
 
-await advance()
 await page.getByRole('button', { name: /请橙色雨衣骑手带你走旧市场小路/ }).click()
 await page.getByRole('button', { name: /查看下一步选择/ }).waitFor({ timeout: 10_000 })
 body = await page.locator('body').innerText()

@@ -11,8 +11,9 @@ for (const cartridge of [beforeWeGetHome, beforeWeGetHomeEn]) {
   assert.match(beats[3]?.text ?? '', /河滨体育馆|Riverside Stadium/i)
   assert.match(beats[4]?.text ?? '', /47%/)
   assert.match(beats[5]?.text ?? '', /橙色雨衣|orange rain jacket/i)
-  assert.equal(cartridge.opening.choices.length, 3)
+  assert.equal(cartridge.opening.choices.length, 0)
+  assert.ok(cartridge.opening.entryAction)
   assert(beats.every((beat) => beat.text.trim().length > 0))
 }
 
-console.log(JSON.stringify({ ok: true, openingBeats: 6, choicesAfterFinalBeat: 3 }))
+console.log(JSON.stringify({ ok: true, openingBeats: 6, entryAction: true, choicesBeforeEntryAction: 0 }))

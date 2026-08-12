@@ -14,10 +14,18 @@ function build(locale: Locale): StoryCartridge {
   const domainRules: StoryDomainRules = {
     rules: [
       {
+        id: 'hear-last-message', intent: 'hear-last-message',
+        match: zh ? ['播放母亲留下的最后一条语音'] : ["play mother's last message"],
+        requirements: [{ type: 'fact', id: 'opening-message-heard', notEquals: true, reason: s('这段语音已经播放过，不能重复结算第一次听见它的代价。', 'The message has already played; its first-hearing cost cannot resolve twice.') }],
+        effects: [{ type: 'stat', id: 'battery', delta: -4 }, { type: 'fact', id: 'opening-message-heard', value: true }, { type: 'fact', id: 'voice-old-market-clue', value: true }, { type: 'fact', id: 'battery-stat-revealed', value: true }],
+        successText: s('你亲手播放那十八秒语音。母亲让你别走河边；雨声后还有三次高架伸缩缝的低响和一句“旧市场”。手机电量从 47 降到 43。近处，一个穿橙色雨衣的骑手正独自抬倒下的车。', 'You play the eighteen-second message yourself. Mother warns you away from the river; beneath the rain are three overpass-joint thumps and “Old Market.” Battery falls from 47 to 43. Nearby, a rider in an orange rain jacket struggles with a fallen scooter.'),
+        successChoices: zh ? ['请橙色雨衣骑手带你走旧市场小路', '记住线索，独自沿高架离开', '把线索告诉车站救援人员核对'] : ['Ask the orange-jacket rider to guide you through Old Market', 'Keep the clue and leave alone by the elevated road', 'Share the clue with station rescuers for verification'],
+      },
+      {
         id: 'replay-last-message', intent: 'replay-last-message',
         match: zh ? ['重听语音', '分辨背景里的路线声音', '再听一次语音'] : ['replay the message', 'identify background route sounds', 'listen to the message again'],
         requirements: [{ type: 'fact', id: 'voice-old-market-clue', notEquals: true, reason: s('你已经确认了旧市场线索，重复播放不会产生第二条线索。', 'You already confirmed the Old Market clue; replaying cannot create a second clue.') }],
-        effects: [{ type: 'stat', id: 'battery', delta: -4 }, { type: 'fact', id: 'voice-old-market-clue', value: true }],
+        effects: [{ type: 'stat', id: 'battery', delta: -4 }, { type: 'fact', id: 'voice-old-market-clue', value: true }, { type: 'fact', id: 'battery-stat-revealed', value: true }],
         successText: s('你从十八秒语音里分辨出高架伸缩缝与“旧市场”：家人没有走河边。手机电量减少 4。', 'You isolate elevated-road joints and “Old Market” in the message: the family avoided the river. Battery falls by 4.'),
         successChoices: zh ? ['请橙色雨衣骑手带你走旧市场小路', '记住线索，独自沿高架离开', '把线索告诉车站救援人员核对'] : ['Ask the orange-jacket rider to guide you through Old Market', 'Keep the clue and leave alone by the elevated road', 'Share the clue with station rescuers for verification'],
         rejectionChoices: zh ? ['请橙色雨衣骑手带路', '立即沿高架离开车站', '先帮助广场居民撤离'] : ['Ask the orange-jacket rider for directions', 'Leave immediately by the elevated road', 'Help residents evacuate the plaza'],
@@ -26,10 +34,26 @@ function build(locale: Locale): StoryCartridge {
         id: 'help-ahe-and-exit', intent: 'help-ahe-and-exit',
         match: zh ? ['帮广场上的骑手抬开倒下的车', '请橙色雨衣骑手带你走旧市场小路', '请骑手带你走旧市场小路'] : ['help a rider move a fallen scooter', 'ask the orange-jacket rider to guide you through Old Market', 'ask the rider to guide you through the Old Market'],
         requirements: [{ type: 'fact', id: 'station-exited', notEquals: true, reason: s('你们已经离开车站，不能再次结算同一次相遇。', 'You have already left the station; the same meeting cannot resolve twice.') }],
-        effects: [{ type: 'party', change: 'add', characterId: 'ahe-rider' }, { type: 'map', nodeId: 'old-market' }, { type: 'stat', id: 'time', delta: -7 }, { type: 'fact', id: 'station-exited', value: true }, { type: 'objective', value: s('穿过旧市场火点，继续追踪家人', 'Cross the Old Market fire and continue tracking the family') }, { type: 'clock', value: s('凌晨 02:05', '02:05 AM') }],
+        effects: [{ type: 'party', change: 'add', characterId: 'ahe-rider' }, { type: 'map', nodeId: 'old-market' }, { type: 'stat', id: 'time', delta: -7 }, { type: 'stat', id: 'stamina', delta: -3 }, { type: 'fact', id: 'station-exited', value: true }, { type: 'fact', id: 'time-stat-revealed', value: true }, { type: 'fact', id: 'stamina-stat-revealed', value: true }, { type: 'objective', value: s('穿过旧市场火点，继续追踪家人', 'Cross the Old Market fire and continue tracking the family') }, { type: 'clock', value: s('凌晨 02:05', '02:05 AM') }],
         successText: s('橙色雨衣骑手先扶正电动车，才说自己叫阿禾；她也在找夜班姐姐，并与你同行到旧市场。天亮前减少 7。', 'The orange-jacket rider rights the scooter before naming herself Ahe. She is searching for her night-shift sister and joins you to Old Market. Before-dawn time falls by 7.'),
         successChoices: zh ? ['和阿禾先拉下市场总电闸', '从屋顶雨棚绕过火点继续赶路', '呼喊店内的人并组织居民撤离'] : ['Pull the market main breaker with Ahe', 'Use the awning roofs to bypass the fire', 'Call to the trapped people and organize evacuation'],
         rejectionChoices: zh ? ['查看旧市场当前火势', '沿已确认路线继续前进', '检查阿禾是否仍在同行'] : ['Check the current Old Market fire', 'Continue along the confirmed route', 'Check whether Ahe is still with you'],
+      },
+      {
+        id: 'exit-alone', intent: 'exit-alone', match: zh ? ['记住线索，独自沿高架离开', '立即沿高架方向离开车站'] : ['keep the clue and leave alone by the elevated road', 'leave now toward the elevated road'],
+        requirements: [{ type: 'fact', id: 'station-exited', notEquals: true, reason: s('你已经离开车站，不能重复领取同一段赶路时间。', 'You already left the station; the same travel segment cannot resolve twice.') }],
+        effects: [{ type: 'map', nodeId: 'old-market' }, { type: 'stat', id: 'time', delta: -4 }, { type: 'stat', id: 'stamina', delta: -5 }, { type: 'fact', id: 'station-exited', value: true }, { type: 'fact', id: 'direct-route-kept', value: true }, { type: 'fact', id: 'time-stat-revealed', value: true }, { type: 'fact', id: 'stamina-stat-revealed', value: true }, { type: 'objective', value: s('独自穿过旧市场，继续追踪家人', 'Cross Old Market alone and continue tracking the family') }, { type: 'clock', value: s('凌晨 01:58', '01:58 AM') }],
+        successText: s('你没有等待同行者，沿高架快步抵达旧市场。你保住了三分钟，却在碎石和积水里消耗了体力；这条直接路线以后会被记住。', 'You do not wait for a companion and reach Old Market by the elevated road. You save three minutes but spend stamina crossing rubble and water; the direct route is now remembered.'),
+        successChoices: zh ? ['先拉下市场总电闸', '从屋顶雨棚绕过火点', '呼喊店内的人并组织撤离'] : ['Pull the market main breaker', 'Use awning roofs to bypass the fire', 'Call to the trapped people and organize evacuation'],
+        rejectionChoices: zh ? ['查看旧市场当前火势', '沿已确认路线继续前进', '检查车站线索是否已保存'] : ['Check the current Old Market fire', 'Continue along the confirmed route', 'Check whether the station clue was saved'],
+      },
+      {
+        id: 'share-message', intent: 'share-message', match: zh ? ['把线索告诉车站救援人员核对', '把语音分享给车站救援人员核对'] : ['share the clue with station rescuers for verification', 'share the message with station rescuers for verification'],
+        requirements: [{ type: 'fact', id: 'voice-shared-with-rescue', notEquals: true, reason: s('救援人员已经收到这段语音，重复分享不会产生第二份验证。', 'Rescuers already received the message; sharing it again creates no second verification.') }],
+        effects: [{ type: 'stat', id: 'battery', delta: -3 }, { type: 'stat', id: 'time', delta: -5 }, { type: 'fact', id: 'voice-shared-with-rescue', value: true }, { type: 'fact', id: 'battery-stat-revealed', value: true }, { type: 'fact', id: 'time-stat-revealed', value: true }],
+        successText: s('你把母亲的私人语音交给车站救援员核对。他们确认“旧市场”广播来自东向高架，也把这条线索加入整片街区的搜救记录；手机再少 3 格电，天亮前少 5。', 'You let station rescuers verify Mother’s private message. They confirm the Old Market broadcast came from the eastbound overpass and add the clue to the district search record; Battery falls by 3 and Before Dawn by 5.'),
+        successChoices: zh ? ['请橙色雨衣骑手带路', '立即沿高架离开车站', '先帮助广场居民撤离'] : ['Ask the orange-jacket rider for directions', 'Leave immediately by the elevated road', 'Help residents evacuate the plaza'],
+        rejectionChoices: zh ? ['请橙色雨衣骑手带路', '立即沿高架离开车站', '查看救援人员的路线标记'] : ['Ask the orange-jacket rider for directions', 'Leave immediately by the elevated road', 'Check the rescuers route mark'],
       },
     ],
   }
@@ -244,16 +268,18 @@ function build(locale: Locale): StoryCartridge {
     dangerDirector,
     domainRules,
     endingDirector,
-    initialFacts: { 'family-last-known-stadium': true, 'player-has-last-message': true, 'direct-route-kept': false },
+    initialFacts: { 'family-last-known-stadium': true, 'player-has-last-message': true, 'direct-route-kept': false, 'opening-message-heard': false, 'voice-old-market-clue': false, 'voice-shared-with-rescue': false, 'station-exited': false, 'battery-stat-revealed': false, 'time-stat-revealed': false, 'stamina-stat-revealed': false },
     statDefinitions: [
-      { id: 'stamina', label: s('体力', 'Stamina'), min: 0, max: 100, initial: 82, inverse: true, display: 'bar', warningAt: 30, dangerAt: 0, maxDelta: 22 },
-      { id: 'time', label: s('天亮前', 'Before dawn'), min: 0, max: 100, initial: 84, inverse: true, display: 'bar', warningAt: 28, dangerAt: 0, maxDelta: 18 },
-      { id: 'battery', label: s('手机电量', 'Phone battery'), min: 0, max: 100, initial: 47, inverse: true, display: 'bar', warningAt: 20, dangerAt: 0, maxDelta: 20 },
+      { id: 'stamina', label: s('体力', 'Stamina'), min: 0, max: 100, initial: 82, inverse: true, display: 'bar', warningAt: 30, dangerAt: 0, maxDelta: 22, revealedByFact: 'stamina-stat-revealed' },
+      { id: 'time', label: s('天亮前', 'Before dawn'), min: 0, max: 100, initial: 84, inverse: true, display: 'bar', warningAt: 28, dangerAt: 0, maxDelta: 18, revealedByFact: 'time-stat-revealed' },
+      { id: 'battery', label: s('手机电量', 'Phone battery'), min: 0, max: 100, initial: 47, inverse: true, display: 'bar', warningAt: 20, dangerAt: 0, maxDelta: 20, revealedByFact: 'battery-stat-revealed' },
     ],
     drawerLabels: { party: s('同行者', 'Companions'), map: s('城市路线', 'City route'), inventory: s('应急包', 'Emergency bag'), log: s('线索', 'Clues') },
     opening: {
       location: s('中央车站 · 南广场', 'Central Station · South Plaza'), time: s('凌晨 01:40', '01:40 AM'), objective: s('离开停电车站，去河滨体育馆寻找母亲和小宇', 'Leave the disabled station and reach Riverside Stadium to find your mother and Xiaoyu'),
       imagePrompt: 'outside a disabled central railway station at night just after an earthquake, SUBJECT A shown with the complete visual identity from the supplied player reference, with a dim blank phone and a small practical backpack resting beside SUBJECT A instead of being held, rain, wet asphalt, residents helping each other, damaged road toward distant emergency glow, before the player chooses a route, grounded contemporary documentary realism, 4:5 portrait, all signs and screens blank, no writing, no text, no UI',
+      entryImagePrompt: 'SUBJECT A pressing play on a blank-screen phone under the dark station awning after an earthquake, rain and broken paving, an orange-jacket rider struggling with a fallen scooter nearby, grounded contemporary documentary realism, complete visible player identity, 4:5 portrait, no writing, no text, no UI',
+      entryAction: s('播放母亲留下的最后一条语音', "Play mother's last message"),
       blocks: [
         { id: 'bh0', kind: 'narration', text: s('凌晨一点四十分，你只是个赶着回家的普通人，刚走到中央车站南广场。', 'At 1:40 AM, you are simply an ordinary person trying to get home, just arriving at Central Station’s South Plaza.') },
         { id: 'bh1', kind: 'event', text: s('灯突然全灭。余震掀动脚下的地砖，雨水随即从裂开的站台边缘灌进广场。', 'Every light dies at once. An aftershock lifts the paving beneath you, and rain spills from the cracked platform edge into the plaza.') },
@@ -262,11 +288,7 @@ function build(locale: Locale): StoryCartridge {
         { id: 'bh4', kind: 'event', text: s('语音停在二十三分钟前。信号随即消失；你的手机还剩 47% 电量。', 'The message is stamped twenty-three minutes ago. The signal drops away; your phone has 47% battery left.') },
         { id: 'bh5', kind: 'event', text: s('高架方向仍能通行，语音里的背景声也许藏着路线；近处，一个穿橙色雨衣的骑手正独自抬倒下的电动车。', 'The elevated road still looks passable, and the message may hide a route clue; nearby, a rider in an orange rain jacket strains alone against a fallen scooter.') },
       ],
-      choices: [
-        { id: 'voice', label: s('重听语音，分辨背景里的路线声音', 'Replay the message and identify background route sounds') },
-        { id: 'exit', label: s('立即沿高架方向离开车站', 'Leave now toward the elevated road') },
-        { id: 'help', label: s('先帮广场上的骑手抬开倒下的车', 'Help a rider move a fallen scooter first') },
-      ],
+      choices: [],
     },
     characters: [
       { id: 'lin-lan-mother', name: s('林岚', 'Lin Lan'), role: s('玩家的母亲', 'Player’s mother'), vitality: 72, stress: 68, detail: s('努力保持冷静，带着小宇和一名行动不便的邻居转移。', 'Trying to stay calm while moving Xiaoyu and a mobility-impaired neighbor.'), lore: s('做过社区急救培训，遇到危险会先确认身边最需要帮助的人。', 'Completed community first-aid training and checks who nearby needs help most.'), skills: [{ id: 'first-aid', label: s('急救', 'First aid'), value: 3 }, { id: 'coordinate', label: s('协调', 'Coordinate'), value: 3 }] },

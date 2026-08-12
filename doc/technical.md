@@ -39,7 +39,8 @@ _qa/opening-contract.ts / opening-sequence.mjs # 六拍开场内容合同与双�
 - 第 0 场由 `stageNarrativeBlocks()` 取出六个作者节拍并单向分页；`openingReady` 在末拍前不渲染 `Composer`，数字键也受同一门禁。末拍出现时页控件退出，选择与自由输入同步进入；重开回第 0 场会重置门禁，已有后续场景的存档不受影响。
 - `beforeWeGetHomeCampaign.ts` 把 28 次玩家决定实现为成对中英文分支；每个按钮命中独立结果，不复用与行动不符的通用段落。物品获得和消耗必须同时输出结构化 `inventory` 命令。
 - `reducer.ts` 是唯一确定性真源，负责数值、地图、同行者、事实、背包、危险和结局状态；模型不能直接覆盖已有事实或清空同伴。
-- `domainRules.ts` 在模型生成前判定被治理行动，返回 accepted/rejected 及完整 effect 集；命中后 reducer 丢弃该回合所有模型协议命令，只应用本地事务和本地三选项。拒绝不改存档，也不推进危险 cadence。Cartridge 当前治理最后语音和阿禾离站两项开场事务。
+- `domainRules.ts` 在模型生成前判定被治理行动，返回 accepted/rejected 及完整 effect 集；命中后完全跳过叙事 adapter，由本地 authored text、事务与三选项组成可回放结果。拒绝不改存档，也不推进危险 cadence。Cartridge 当前治理“播放最后语音”、重听线索、阿禾带路、独自离站与分享语音五项开场事务；进入页动作会通过 `enterStory()` 真实推进第 1 幕，而非只是换屏。
+- `StoryShell.tsx` 对前 3 幕执行逐页阅读门禁：结果先落地，再进入 decision；该幕叙事未读到最后一页时不挂载 Composer。第 4 幕后恢复普通自由节奏，避免长线游戏被永久做成逐页点击器。
 - `hiddenUntilIntroduced` 把未来固定角色排除在初始 `StorySave` 之外；可见正文完成外形/动作、名字来源和意图后，稳定 `character_update` 或领域 party effect 才能创建。`normalizeCharacterState()` 会移除从未真实登场的旧存档错误预载，但保留已经有正文/队伍/关系证据的人物。
 - `imageDirector.ts` 拒绝带 CJK 的 renderer prompt，并把 `image_subject` 解释为头像归属：只有玩家执行主要画面动作时为 `player`。`useStoryEngine.ts` 通过普通 image edit 直传同一原始头像。`imageIdentity.ts` 把前置身份合同限制在 `2400` 字符内，将旅行者等玩家别名改写成 `SUBJECT A`，并把头像视为脸、轮廓、形态、身体比例、遮盖、面具、服装、材质、颜色和配件组成的完整视觉身份。原头像未出现的脸、皮肤、手脚不得生成，阿禾、林岚、小宇、周岚、路人和动物也不得继承玩家特征。
 - `src/shared/runtime/media.ts` 是独立媒体服务的框架无关客户端：统一请求 UUID、尺寸适配、任务轮询、超时和结构化错误。`useGenImage.ts` 以永久游戏 UUID 作为 `session_id`；网络结果不明确时复用同一 `request_id`，避免重复生成和重复计费。场景重试读取 `retryable` 与 `retry_after_seconds`，永久错误立即停止，限流错误遵守服务等待窗口。视频暂不迁移，因为当前故事画面是 `4:5`，实验视频端点只接受 `9:16`。
