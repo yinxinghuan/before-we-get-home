@@ -329,6 +329,7 @@ export interface StoryCartridge {
   itemImageDirection?: string
   sceneImageDirection?: string
   sceneImageAvoid?: string
+  transitionAnchor?: string
   playerImageAliases?: string[]
   playerImageRole?: string
   playerImageExclusions?: string[]
@@ -352,7 +353,7 @@ export interface StoryCartridge {
 export interface DemoTurn { match: string[]; content: string; imagePrompt?: string; imageSubject?: SceneImageSubject }
 
 export interface StorySave {
-  version: 7
+  version: 8
   cartridgeId: CartridgeId
   locale: Locale
   remoteChatId?: string
@@ -361,6 +362,7 @@ export interface StorySave {
   location: string
   time: string
   objective: string
+  decisionContext: string
   stats: Record<string, number>
   blocks: StoryBlock[]
   choices: Choice[]

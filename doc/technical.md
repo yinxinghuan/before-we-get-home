@@ -58,3 +58,9 @@ _qa/opening-contract.ts / opening-sequence.mjs # 六拍开场内容合同与双�
 - 改界面表现：主要修改 `StoryShell.tsx` 与 `story.less`；改字幕价值判断编辑 `engine/stageNarrative.ts` 并运行 `npm run test:stage-narrative`；改开场必须同步 `npm run test:opening` 与 `_qa/opening-sequence.mjs`。不得改变“末拍前无选择”或“结果阶段隐藏旧选项、下一步再显示新前提和新选项”的节奏。
 - 改生图内容：修改 cartridge 的 `sceneImageDirection`、`sceneImageAvoid`、`playerImageRole` 与 `playerImageExclusions`；不可把中文可见故事正文拼入 renderer prompt。改媒体服务合同：修改 `src/shared/runtime/media.ts`；临时回滚旧生图链路：在 URL 增加 `media_backend=legacy`。
 - 接后端或正式发布：通过 `@shared/runtime` 和独立 `game-publish` 流程处理；源码项目本身不编辑平台迁移工具生成的 `games.json`。
+
+## 连续性守门（2026-08-13）
+
+- Cartridge 通过 `transitionAnchor` 声明“手机离线地图与母亲最后一条语音”；`src/story/engine/continuity.ts` 生成地点桥接、压缩 `decisionContext` 并核验选项名词是否已有可见依据。
+- `reducer.ts` 在 `map_update` 与受管辖地图事务提交前插入桥接，并在选择落入 UI 前执行 grounded-choice 检查；旧存档升级到 StorySave v8 时从现有目标补齐 `decisionContext`。
+- `_qa/continuity-gate.ts` 以未登场的“国王 / 快递员 / 玻璃王国”作为反例，同时断言中转锚点先于目的地正文。

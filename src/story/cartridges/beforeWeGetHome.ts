@@ -214,6 +214,7 @@ function build(locale: Locale): StoryCartridge {
     itemImageDirection: 'grounded contemporary emergency object study on dark wet fabric and neutral concrete, practical wear, sodium-orange and cool rain reflections, object only, no people, no writing or readable text',
     sceneImageDirection: 'cinematic contemporary disaster journey at night, rain-dark asphalt, wet concrete, sodium-orange emergency light, practical modern clothing, grounded natural anatomy, humane documentary realism, one decisive current event, 4:5 portrait master',
     sceneImageAvoid: 'the central station opening composition, generic lone traveler looking at a phone, movie poster staging, military apocalypse, ruined skyline spectacle, readable signs, text, logo, border or UI',
+    transitionAnchor: s('手机离线地图与母亲最后一条语音', 'the offline phone map and the mother’s last voice message'),
     playerImageAliases: ['ordinary traveler', 'the traveler', 'returning traveler', 'player protagonist', '旅人', '赶路人', '玩家'],
     playerImageRole: 'the unnamed player-controlled returning traveler; the supplied reference is authoritative for the traveler’s entire visible form, covering, costume and face visibility, while a small emergency backpack and blank phone are optional story props; this subject is never Ahe, Lin Lan, Xiaoyu or a responder',
     playerImageExclusions: [
