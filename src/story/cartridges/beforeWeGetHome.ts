@@ -188,7 +188,8 @@ function build(locale: Locale): StoryCartridge {
       'an electrical fire seals an exit as smoke thickens', 'a crowd contests the only vehicle or medical supply',
       'a dark underpass hides broken glass, loose animals and a sudden current', 'a damaged overpass rail continues cracking under load',
     ],
-    methods: zh ? ['用身体保护并直接突破', '观察环境，寻找安全路线', '与同伴协作或消耗工具'] : ['protect people and push through physically', 'read the environment and find a safer route', 'coordinate with a companion or spend a tool'],
+    methods: zh ? ['用手机手电照出最近的安全出口', '拉住身边的人沿承重墙撤离', '用急救包和绳带处理眼前障碍'] : ['Use the phone light to find the nearest safe exit', 'Keep hold of the others and evacuate along a load-bearing wall', 'Use the first-aid kit and straps on the immediate obstacle'],
+    legacyMethods: zh ? [['用身体保护并直接突破', '观察环境，寻找安全路线', '与同伴协作或消耗工具']] : [['protect people and push through physically', 'read the environment and find a safer route', 'coordinate with a companion or spend a tool']],
     physicalCombat: 'rare',
     resolution: { skill: s('灾后应变', 'Disaster Response'), modifier: 2, dcBySeverity: [7, 10, 13, 16, 19], fallbackCosts: [{ statId: 'stamina', operation: 'remove', amount: 14 }] },
   }
@@ -224,8 +225,8 @@ function build(locale: Locale): StoryCartridge {
       'Zhoulan is a tired hospital nurse with her own different face',
       'rescue workers, evacuees, children and animals can never inherit any reference-derived face, covering, costume, silhouette, colors or body traits',
     ],
-    imageDirector: { maxQuietTurns: 1, softCooldownTurns: 0, guaranteedTriggers: ['new-location', 'rare-item', 'party-change', 'chapter-checkpoint', 'relationship-change', 'objective-change', 'skill-outcome'], softTriggers: [] } satisfies StoryImageDirector,
-    mediaDirector: { imageProfile: 'fast-small', imageTarget: { width: 512, height: 640 }, videoEnabled: true, videoDuration: 5, minVideoGapTurns: 8 },
+    imageDirector: { maxQuietTurns: 1, softCooldownTurns: 0, guaranteedTriggers: ['new-location', 'rare-item', 'party-change', 'chapter-checkpoint', 'relationship-change', 'objective-change', 'skill-outcome'], softTriggers: [], perspective: { ordinary: 'balanced', importantDialogue: 'first-person', newLocation: 'observer' } } satisfies StoryImageDirector,
+    mediaDirector: { imageProfile: 'fast-small', imageTarget: { width: 512, height: 640 }, videoEnabled: false, videoDuration: 5, minVideoGapTurns: 8 },
     director: {
       mode: 'guided', maxActiveThreads: 3,
       mainQuest: s('在洪峰抵达河湾前穿过受损城市，依据母亲最后一条语音找到母亲林岚与弟弟小宇，并让一路做出的承诺在最终营救中产生真实后果。', 'Cross the damaged city before the flood crest, use the mother’s last voice message to find Lin Lan and Xiaoyu, and let every promise made along the road matter in the final rescue.'),
