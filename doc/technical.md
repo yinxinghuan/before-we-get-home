@@ -71,3 +71,8 @@ _qa/opening-contract.ts / opening-sequence.mjs # 六拍开场内容合同与双�
 - StoryImageDirector.perspective 分别配置普通镜头、重要对话和新地点；当前产品使用 balanced / first-person / observer。
 - engine/imageDirector.ts 在每次图片决策中写入 perspective，第一人称自动取消 playerVisible 与头像参考；玩家主导动作强制 observer。SCENE_IMAGE_PROMPT_VERSION=11 只重写尚未完成的旧图片任务，不批量重画历史成图。
 - _qa/perspective-director.ts 对中英文各运行 20 张普通镜头，并覆盖重要对话、新地点和玩家主导动作。运行 npm run test:perspective 后再构建。
+
+## 行动权威影子审计（2026-08-20）
+
+- `engine/authorityShadow.ts` 只读取当前 cinematic 阶段已经显示的选择，以原有 `domainRules` 分类 `accepted / rejected / open` 并报告真正进入游戏后的非终局空 tray。
+- 审计不补选项、不改阶段、不写存档或上传数据；页面内存最多 100 条，`?authority_shadow=0` 可关闭，`npm run test:authority-shadow` 固定验证零改写。
