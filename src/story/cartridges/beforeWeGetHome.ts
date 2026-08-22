@@ -213,7 +213,7 @@ function build(locale: Locale): StoryCartridge {
     audioTheme: {
       recorded: { music: { src: audioThemeUrl, gain: .19 }, ambience: { src: audioAmbienceUrl, gain: .3 }, cues: { discovery: { src: audioFeatureUrl, gain: .18, role: 'feature', cooldownMs: 180_000 }, relationship: { src: audioFeatureUrl, gain: .18, role: 'feature', cooldownMs: 180_000 }, summary: { src: audioFeatureUrl, gain: .18, role: 'feature', cooldownMs: 180_000 } } },
       material: 'apartment', bpm: 62, rootHz: 110, scale: [0, 2, 5, 7, 9],
-      levels: { music: .13, ambient: .16, sfx: .4, master: .46 },
+      levels: { music: .13, ambient: .16, sfx: .045, master: .46 },
       tension: [{ statId: 'stamina', direction: 'low', weight: .35 }, { statId: 'time', direction: 'low', weight: .4 }, { statId: 'battery', direction: 'low', weight: .25 }],
     },
     itemImageDirection: 'grounded contemporary emergency object study on dark wet fabric and neutral concrete, practical wear, sodium-orange and cool rain reflections, object only, no people, no writing or readable text',
