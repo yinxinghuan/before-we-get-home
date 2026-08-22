@@ -6,6 +6,8 @@ import { buildBeforeWeGetHomeCampaign } from './beforeWeGetHomeCampaign'
 
 const coverImage = new URL('../img/worlds/before-we-get-home.webp', import.meta.url).href
 const entryImage = new URL('../img/worlds/before-we-get-home-entry.png', import.meta.url).href
+const audioThemeUrl = new URL('../audio/assets/theme.mp3', import.meta.url).href
+const audioAmbienceUrl = new URL('../audio/assets/ambience.mp3', import.meta.url).href
 
 function build(locale: Locale): StoryCartridge {
   const zh = locale === 'zh'
@@ -208,6 +210,7 @@ function build(locale: Locale): StoryCartridge {
     },
     theme: { outer: '#0d151b', surface: '#152129', paper: '#eef1ef', ink: '#101820', muted: '#667179', accent: '#f3b61f', danger: '#d84a3a', gold: '#39a9c8', material: 'apartment' },
     audioTheme: {
+      recorded: { music: { src: audioThemeUrl, gain: .19 }, ambience: { src: audioAmbienceUrl, gain: .3 } },
       material: 'apartment', bpm: 62, rootHz: 110, scale: [0, 2, 5, 7, 9],
       levels: { music: .13, ambient: .16, sfx: .4, master: .46 },
       tension: [{ statId: 'stamina', direction: 'low', weight: .35 }, { statId: 'time', direction: 'low', weight: .4 }, { statId: 'battery', direction: 'low', weight: .25 }],

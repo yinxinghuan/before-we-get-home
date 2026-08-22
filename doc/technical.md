@@ -76,3 +76,6 @@ _qa/opening-contract.ts / opening-sequence.mjs # 六拍开场内容合同与双�
 
 - `engine/authorityShadow.ts` 只读取当前 cinematic 阶段已经显示的选择，以原有 `domainRules` 分类 `accepted / rejected / open` 并报告真正进入游戏后的非终局空 tray。
 - 审计不补选项、不改阶段、不写存档或上传数据；页面内存最多 100 条，`?authority_shadow=0` 可关闭，`npm run test:authority-shadow` 固定验证零改写。
+## 2026-08-23 混合音频升级
+
+`src/story/audio/` 新增本作专属的雨城归途主题与室内雨声环境层，精确反馈继续由 Web Audio 负责。播放器遵循用户手势、静音和页面可见性，长音频不伪装无缝循环；失败时保持故事可玩并使用合成回退或静音。
